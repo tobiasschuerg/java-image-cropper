@@ -2,6 +2,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Cropps an image to its bounding box.
@@ -11,17 +13,22 @@ import java.io.IOException;
 class ImageCropper {
 
     private int border = 1;
-    private int skipped = 0;
+    private List<File> skipped = new ArrayList<>();
+
+    public List<File> getSkipped() {
+        return skipped;
+    }
+
 
     /**
      * @param border additional background padding to preserver color.
      */
-    public ImageCropper(int border) {
+    ImageCropper(int border) {
         this.border = border;
     }
 
 
-    public void crop(File f) {
+    void crop(File f) {
 
         BufferedImage img = null;
         try {
@@ -117,7 +124,7 @@ class ImageCropper {
         rightCrop = rightCrop < 0 ? 0 : rightCrop;
 
         if (img.getHeight() - topCrop - bottomCrop < 1) {
-            skipped++;
+            skipped.add(f);
             return;
         }
 

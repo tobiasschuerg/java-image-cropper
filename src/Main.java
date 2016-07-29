@@ -1,5 +1,3 @@
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,7 +7,7 @@ import java.nio.file.Paths;
 public class Main {
 
     /**
-     * Cropps all images in the "in/" folder
+     * Crops all images in the "in/" folder to their bounding box.
      */
     public static void main(String[] ignored) {
         Path path = Paths.get("in/");
@@ -26,6 +24,11 @@ public class Main {
             });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        for (File f :
+                cropper.getSkipped()) {
+            System.out.println("Skipped: " + f);
         }
 
     }
