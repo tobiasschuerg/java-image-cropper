@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -13,12 +14,11 @@ public class Main {
         Path path = Paths.get("in/");
         System.out.println("Cropping images in: " + path);
         ImageCropper cropper = new ImageCropper(3);
-
+        final AtomicInteger count = new AtomicInteger();
         try {
-            final int[] count = {0};
-            Files.walk(path).forEach(pathConsumer -> {
+            Files.walk(path).parallel().forEach(pathConsumer -> {
                 if (Files.isRegularFile(pathConsumer)) {
-                    System.out.print(count[0]++ + ": processing: " + pathConsumer);
+                    System.out.print(count.incrementAndGet() + ": processing: " + pathConsumer);
                     cropper.crop(pathConsumer.toFile());
                 }
             });
