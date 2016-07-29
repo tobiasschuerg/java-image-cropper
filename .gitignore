@@ -2,7 +2,7 @@
 .idea/
 
 in/
-!in/sample.png
+!/in/sample.png
 
 cropped/
 !cropped/sample.png
