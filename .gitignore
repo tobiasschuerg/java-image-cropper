@@ -1,7 +1,7 @@
 *.class
 .idea/
 
-in/
+in/*
 !/in/sample.png
 
 cropped/
