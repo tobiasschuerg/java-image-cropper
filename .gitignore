@@ -1,6 +1,12 @@
 *.class
 .idea/
 
+in/
+!in/sample.png
+
+cropped/
+!cropped/sample.png
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
