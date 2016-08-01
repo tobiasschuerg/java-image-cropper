@@ -1,0 +1,5 @@
+Java natively does not compress PNGs.
+Add your own compression logic if needed.
+
+For example use **pngout**:
+http://advsys.net/ken/utils.htm

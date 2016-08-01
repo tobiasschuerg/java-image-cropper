@@ -4,11 +4,11 @@
 in/*
 !/in/sample.png
 
-cropped/
+cropped/*
 !cropped/sample.png
 
-cropped_compressed/
-!cropped_compressed/pngout.exe
+cropped_compressed/*
+cropped_compressed/pngout.exe
 !cropped_compressed/README
 
 # Mobile Tools for Java (J2ME)
