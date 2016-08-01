@@ -1,7 +1,10 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,28 +16,33 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class ImageCropper {
 
+    private final static AtomicInteger filesProcessedCount = new AtomicInteger();
     private final boolean verbose;
+    private final Path outputPath;
     private int border = 1;
     private List<File> skipped = new ArrayList<>();
-
-    private final static AtomicInteger filesProcessedCount = new AtomicInteger();
-
-    List<File> getSkipped() {
-        return skipped;
-    }
+    private int logEvery = 1;
 
     /**
      * @param border additional background padding to preserver color.
      */
-    ImageCropper(int border, boolean verbose) {
+    public ImageCropper(int border, boolean verbose, Path outputPath) {
         this.border = border;
         this.verbose = verbose;
+        this.outputPath = outputPath;
     }
 
-    ImageCropper(int border) {
-        this(border, false);
+    public ImageCropper(int border, Path outputPath) {
+        this(border, false, Paths.get("temp/"));
     }
 
+    public void setLogEvery(int logEvery) {
+        this.logEvery = logEvery;
+    }
+
+    List<File> getSkipped() {
+        return skipped;
+    }
 
     void crop(File f) {
 
@@ -134,7 +142,7 @@ class ImageCropper {
 
         BufferedImage croppedImage = img.getSubimage(leftCrop, topCrop, img.getWidth() - leftCrop - rightCrop, img.getHeight() - topCrop - bottomCrop);
 
-        File outputFile = new File("cropped/" + f.getName());
+        File outputFile = new File(outputPath.toFile() + "/" + f.getName());
 
         try {
             ImageIO.write(croppedImage, "png", outputFile);
@@ -142,13 +150,13 @@ class ImageCropper {
             e.printStackTrace();
         }
 
-        if (verbose) {
-            String processedFile = filesProcessedCount.incrementAndGet() + ". processed: " + f;
+        if ((filesProcessedCount.incrementAndGet() % logEvery) == 0 || verbose) {
+            String processedFile = filesProcessedCount.get() + ". processed: " + f;
             String cropped = " -> t: " + topCrop
                     + ", r: " + rightCrop
                     + ", b: " + bottomCrop
                     + ", l: " + leftCrop;
-            System.out.printf("%-40s  %-30s%n", processedFile, cropped);
+            System.out.printf("%-60s  %-30s%n", processedFile, cropped);
         }
     }
 }

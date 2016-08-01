@@ -26,15 +26,18 @@ public class Main {
 
     }
 
-    private static void cropImages(Path path) {
-        System.out.println("Cropping images in: " + path);
+    private static void cropImages(Path directoryPath) {
+        System.out.println("Cropping images in: " + directoryPath);
         int borderPx = 3;
-        boolean verbose = true;
-        ImageCropper cropper = new ImageCropper(borderPx, verbose);
+        boolean verbose = false;
+        ImageCropper cropper = new ImageCropper(borderPx, verbose, Paths.get("cropped/"));
+        // cropper.setLogEvery(100);
         try {
-            Files.walk(path).parallel().forEach(pathConsumer -> {
-                if (Files.isRegularFile(pathConsumer)) {
-                    cropper.crop(pathConsumer.toFile());
+            Files.walk(directoryPath).parallel().forEach(filePath -> {
+                if (Files.isRegularFile(filePath)) {
+                    cropper.crop(filePath.toFile());
+                } else {
+                    System.out.println("Skipping: '" + filePath.toFile().getAbsolutePath() + "'");
                 }
             });
         } catch (IOException e) {
