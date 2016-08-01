@@ -7,6 +7,10 @@ in/*
 cropped/
 !cropped/sample.png
 
+cropped_compressed/
+!cropped_compressed/pngout.exe
+!cropped_compressed/README
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 

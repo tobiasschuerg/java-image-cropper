@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Cropps an image to its bounding box.
@@ -12,25 +13,32 @@ import java.util.List;
  */
 class ImageCropper {
 
+    private final boolean verbose;
     private int border = 1;
     private List<File> skipped = new ArrayList<>();
 
-    public List<File> getSkipped() {
+    private final static AtomicInteger filesProcessedCount = new AtomicInteger();
+
+    List<File> getSkipped() {
         return skipped;
     }
-
 
     /**
      * @param border additional background padding to preserver color.
      */
-    ImageCropper(int border) {
+    ImageCropper(int border, boolean verbose) {
         this.border = border;
+        this.verbose = verbose;
+    }
+
+    ImageCropper(int border) {
+        this(border, false);
     }
 
 
     void crop(File f) {
 
-        BufferedImage img = null;
+        BufferedImage img;
         try {
             img = ImageIO.read(f);
         } catch (IOException e) {
@@ -52,7 +60,6 @@ class ImageCropper {
             if (removableLine) {
                 topCrop++;
             } else {
-                System.out.print(" - t: " + topCrop);
                 break;
             }
         }
@@ -70,7 +77,6 @@ class ImageCropper {
             if (removableLine) {
                 leftCrop++;
             } else {
-                System.out.print("l: " + leftCrop);
                 break;
             }
         }
@@ -88,13 +94,12 @@ class ImageCropper {
             if (removableLine) {
                 bottomCrop++;
             } else {
-                System.out.print(", b: " + bottomCrop);
                 break;
             }
         }
 
         int rightCrop = 0;
-        for (int x = 0; x < img.getWidth(); x++) {
+        for (int x = img.getWidth() - 1; x > 0; x--) {
             boolean removableLine = true;
             for (int y = 0; y < img.getHeight(); y++) {
                 int c = img.getRGB(x, y);
@@ -106,7 +111,6 @@ class ImageCropper {
             if (removableLine) {
                 rightCrop++;
             } else {
-                System.out.println(", r: " + rightCrop);
                 break;
             }
         }
@@ -128,15 +132,23 @@ class ImageCropper {
             return;
         }
 
-        BufferedImage SubImgage = img.getSubimage(leftCrop, topCrop, img.getWidth() - leftCrop - rightCrop, img.getHeight() - topCrop - bottomCrop);
+        BufferedImage croppedImage = img.getSubimage(leftCrop, topCrop, img.getWidth() - leftCrop - rightCrop, img.getHeight() - topCrop - bottomCrop);
 
-        File outputfile = new File("cropped/" + f.getName());
+        File outputFile = new File("cropped/" + f.getName());
 
         try {
-            ImageIO.write(SubImgage, "png", outputfile);
+            ImageIO.write(croppedImage, "png", outputFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        if (verbose) {
+            String processedFile = filesProcessedCount.incrementAndGet() + ". processed: " + f;
+            String cropped = " -> t: " + topCrop
+                    + ", r: " + rightCrop
+                    + ", b: " + bottomCrop
+                    + ", l: " + leftCrop;
+            System.out.printf("%-40s  %-30s%n", processedFile, cropped);
+        }
     }
 }
