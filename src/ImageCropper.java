@@ -55,8 +55,8 @@ class ImageCropper {
         }
 
         int topCrop = 0;
-        int color = img.getRGB(0, 0);
         for (int y = 0; y < img.getHeight(); y++) {
+            int color = img.getRGB(0, y);
             boolean removableLine = true;
             for (int x = 0; x < img.getWidth(); x++) {
                 int c = img.getRGB(x, y);
@@ -74,6 +74,7 @@ class ImageCropper {
 
         int leftCrop = 0;
         for (int x = 0; x < img.getWidth(); x++) {
+            int color = img.getRGB(x, 0);
             boolean removableLine = true;
             for (int y = 0; y < img.getHeight(); y++) {
                 int c = img.getRGB(x, y);
@@ -90,7 +91,8 @@ class ImageCropper {
         }
 
         int bottomCrop = 0;
-        for (int y = img.getHeight() - 1; y > 0; y--) {
+        for (int y = img.getHeight() - 1; y > topCrop; y--) {
+            int color = img.getRGB(0, y);
             boolean removableLine = true;
             for (int x = 0; x < img.getWidth(); x++) {
                 int c = img.getRGB(x, y);
@@ -107,7 +109,8 @@ class ImageCropper {
         }
 
         int rightCrop = 0;
-        for (int x = img.getWidth() - 1; x > 0; x--) {
+        for (int x = img.getWidth() - 1; x > leftCrop; x--) {
+            int color = img.getRGB(x, 0);
             boolean removableLine = true;
             for (int y = 0; y < img.getHeight(); y++) {
                 int c = img.getRGB(x, y);
@@ -140,7 +143,13 @@ class ImageCropper {
             return;
         }
 
-        BufferedImage croppedImage = img.getSubimage(leftCrop, topCrop, img.getWidth() - leftCrop - rightCrop, img.getHeight() - topCrop - bottomCrop);
+        int horizontalCrop = Math.min(leftCrop, rightCrop);
+        int verticalCrop = Math.min(topCrop, bottomCrop);
+
+        BufferedImage croppedImage = img.getSubimage(
+                horizontalCrop, verticalCrop,
+                img.getWidth() - 2 * horizontalCrop,
+                img.getHeight() - 2 * verticalCrop);
 
         File outputFile = new File(outputPath.toFile() + "/" + f.getName());
 
