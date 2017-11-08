@@ -34,7 +34,7 @@ public class Main {
         // cropper.setLogEvery(100);
         try {
             Files.walk(directoryPath).parallel().forEach(filePath -> {
-                if (Files.isRegularFile(filePath)) {
+                if (Files.isRegularFile(filePath) && filePath.toString().endsWith(".png")) {
                     cropper.crop(filePath.toFile());
                 } else {
                     System.out.println("Skipping: '" + filePath.toFile().getAbsolutePath() + "'");
