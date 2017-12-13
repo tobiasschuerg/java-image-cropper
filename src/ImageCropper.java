@@ -1,6 +1,7 @@
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -46,9 +47,15 @@ class ImageCropper {
 
     void crop(File f) {
 
+        BufferedImage inputImage;
         BufferedImage img;
         try {
-            img = ImageIO.read(f);
+            // https://stackoverflow.com/questions/28593941/in-java-converting-an-image-to-srgb-makes-the-image-too-bright
+            // https://docs.oracle.com/javase/7/docs/api/java/awt/color/ColorSpace.html
+            inputImage = ImageIO.read(f);
+            ColorSpace ics = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            ColorConvertOp cco = new ColorConvertOp( ics, null );
+            img = cco.filter( inputImage, null );
         } catch (IOException e) {
             e.printStackTrace();
             return;
